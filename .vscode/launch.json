@@ -18,7 +18,7 @@
       "request": "launch",
       "skipFiles": ["<node_internals>/**"],
       "type": "node",
-      "args": ["start", "../sample-bluestone-project", "--port", "3601"]
+      "args": ["start", "C:\\Users\\administrator\\Desktop\\Raiz\\Bluestone2\\Apm Insights\\apm-insight-bluestone\\", "--port", "360"]
     },
     {
       "name": "Launch Command line for wab-bluestone",

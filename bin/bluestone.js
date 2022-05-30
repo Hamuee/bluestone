@@ -9,9 +9,13 @@ const fsSync = require('fs')
 const axios = require('axios').default
 let config = require('../config')
 const regedit = require('../controller/regedit')
+
+// EHM-W: Get the Bluestone process ID
 function getPidPath() {
     return path.join(__dirname, 'bluestone.pid')
 }
+
+// EHM-W: If there is an issue we are going print the error message
 process.on('unhandledRejection', (reason, promise) => {
     //supress endless execution context error....
     if (reason.message.includes('Execution context is not available in detached frame')) return
@@ -28,6 +32,8 @@ function getRuntimeInfo() {
     }
     return runTime
 }
+
+// EHM-W: Lunch the Back End Server
 function serverAt(options) {
     async function start(port) {
         // Set in case npm dependencies do anything with this
@@ -54,12 +60,16 @@ try {
     let runTime = getRuntimeInfo()
     let bluestoneJsonPath = ''
     let port = runTime.port
+    
+    //EHM-W: Recive the parameters that we add in the command line
     switch (cli.command) {
 
         case 'start':
             //test bluestone.json file
 
             if (fsSync.existsSync(cli.args.path)) {
+
+                //EHM-H-A2: process.env is the object with the parameters of the command line
                 //check if it working out-of-box
                 process.env.bluestonePath = path.join(path.resolve(cli.args.path), 'bluestone.json')
             }

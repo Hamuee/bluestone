@@ -46,6 +46,8 @@ async function startRecording(record, io, url = null) {
     const alert = new AlertWatcher(record, page, logEvent)
     await alert.startWatching()
 
+    //EHM-W: Here is where all the steps are recording
+    //EHM-H-A3.1: record object is used to recording
     //initialize recording object
     record.steps = []
     record.isRecording = true
@@ -94,10 +96,13 @@ async function startRecording(record, io, url = null) {
             }
         }
     }
+    //Homework
     let eventStep = new RecordingStep({ command: 'goto', target: url, iframe: '[]' })
     eventStep.parameter = url
     eventStep.finalLocator = 'FAKE locator to avoid check'
     eventStep.finalLocatorName = 'FAKE locator name to avoid check'
+
+    //Homework 2
     logEvent(record)(eventStep)
 
 

@@ -19,6 +19,21 @@ module.exports = function (recordRepo, browser, page, io) {
      * Log browser event to the cache
      * @param {import('../../record/class').RecordingStep} eventDetail 
      */
+    /**EHM-W: 
+     * eventDetail has: 
+     *              Command like "click"
+     *              HallingTree 
+     *              PotentialMatch: Give us the possible locators that we could use, the possible 
+     *                              locators are geted from bluestone-locator class
+     *                              Note: When we have more then one potential match the color will be red
+     *              framePotentialMatch:    Help to know where the information come from
+     *              iframe: The final frame that we are going to use
+     *              Target (Locator)
+     *              CurrentSelectedIndex: Currently is null
+     *              Parameter: The information that we are going to parse
+     *              pos: Postion of the web-element
+     *              timestamp: Time between the previous action and the current action
+    */
     async function logEvent(eventDetail) {
 
         //goto command does not generate a locator, we w
@@ -67,6 +82,7 @@ module.exports = function (recordRepo, browser, page, io) {
 
 
         if (page != null) {
+            //EHM-W: We get the information of the picture
             picturePath = recordRepo.getPicPath()
 
             if (eventDetail.target == '') {
@@ -95,6 +111,8 @@ module.exports = function (recordRepo, browser, page, io) {
 
         //if event command is null, call the in-browser console
         if (eventDetail.command == null) {
+
+            //EHM-W: When we press ctrl+q we pause the recording
             recordRepo.isCaptureHtml = false
 
             recordRepo.spyBrowserSelectionPicPath = picturePath
@@ -103,6 +121,7 @@ module.exports = function (recordRepo, browser, page, io) {
             recordRepo.spyVisible = true
             //populate group info
             try {
+                //EHM-W: recordRepo.refreshActiveFunc() is used to get a current page and find e relevant function
                 //TODO: This function is causing performance issue
                 await recordRepo.refreshActiveFunc()
 
@@ -110,6 +129,10 @@ module.exports = function (recordRepo, browser, page, io) {
                 recordRepo.operation.spy.result.isPass = false
                 recordRepo.operation.spy.result.text = `Unable to load bluestone-func.js: ${error.toString()}`
             }
+
+            // EHM-W: getRecommendedLocatorFromDefiner Define the list of possible locator that the user see 
+            //          in the locator area
+            // recordRepo.getRecommendedLocatorFromDefiner(XXXXXXX)
 
             //display pending work progress
             await drawPendingWorkProgress(page, recordRepo.picCapture, recordRepo.htmlCaptureStatus)
@@ -141,9 +164,24 @@ module.exports = function (recordRepo, browser, page, io) {
             eventDetail.htmlPath = htmlPath
             eventDetail.potentialMatch = locatorPotentialMatch
             eventDetail.framePotentialMatch = framePotentialMatch
+            
+            //EHM eventDetail (Example: FAKE locator name to avoid check)
             //construct operation event
             let event = new RecordingStep(eventDetail)
             try {
+
+                /**EHM-W: commandFuncAst describe the acction like Click and have:
+                 * description: Like 'Click UI element'
+                 * locators
+                 * name: Like 'Click'
+                 * params: This is an array and each element of the array have:
+                 *          Description
+                 *          name
+                 *          title
+                 *          type
+                 */
+
+                //commandFuncAst (Example: Navigate browser to he url)
                 let commandFuncAst = recordRepo.astManager.getFunction(event.command)
                 event.functionAst = commandFuncAst
                 //parse in argument into parameter
@@ -160,7 +198,7 @@ module.exports = function (recordRepo, browser, page, io) {
                 event.finalLocator = selectedLocator.Locator
             }
 
-
+            //EHM-W: recordRepo is the place where all the steps are recording
             await recordRepo.addStep(event)
             // console.log(JSON.stringify(recordRepo.steps))
             //update last operation time

@@ -1,7 +1,11 @@
 const assert = require('assert')
 const TestSite = require('../support/testSite.support')
 let Bluestone = require('../support/bluestoneBackend')
+
+//EHM-W: We send a request to a testing site
 let siteBackend = new TestSite()
+
+//EHM-W: We send a request to a Bluestone's router
 let bluestoneBackend = new Bluestone()
 let testConfig = require('../testConfig')
 let fs = require('fs').promises
@@ -10,10 +14,15 @@ const path = require('path')
 describe('Smoke Test - Integration', () => {
     const suite = this;
     beforeEach(async function () {
+        //EHM-W: We add timeoutnfor each it function
         this.timeout(60000)
+
+        //EHM-W: siteBackend asure that all test are in the same site 
         siteBackend = new TestSite()
         await siteBackend.launchApp()
         bluestoneBackend = new Bluestone()
+
+        //EHM-W: Lunch the Bluestone
         await bluestoneBackend.launchApp()
     })
     after(function (done) {
@@ -42,6 +51,7 @@ describe('Smoke Test - Integration', () => {
         });
     })
     it('should launch test harness and bluestone correctly', async () => {
+        console.log("Hola" + 1)
         let res = await siteBackend.getMainPage()
         assert.strictEqual(res.status, 200, 'test harness site should launched')
 
@@ -51,8 +61,11 @@ describe('Smoke Test - Integration', () => {
 
     }).timeout(60000)
     it('should record click, change,  and call bluestone console correctly', async () => {
+        console.log("Hola" + 2)
+        //EHM-Q: happyPathPage?
         let happyPathPage = testConfig.testSite.page.happypath
         await bluestoneBackend.startRecording(siteBackend.singlePageHappyPath)
+        //EHM-H: How to send operation to the website
         await siteBackend.sendOperation('click', happyPathPage.header)
         await siteBackend.sendOperation('change', happyPathPage.text_input_first_name, 'Wix')
         await siteBackend.sendOperation('change', happyPathPage.text_input_last_name, 'Woo')
@@ -65,8 +78,9 @@ describe('Smoke Test - Integration', () => {
         assert.strictEqual(res.data.value, 3)
         // await new Promise(resolve => setTimeout(resolve, 500000))
 
-    }).timeout(10000)
+    }).timeout(10000000)
     it('should correlate existing locator when hovering defined element', async () => {
+        console.log("Hola" + 3)
         let happyPathPage = testConfig.testSite.page.happypath
         await bluestoneBackend.startRecording(siteBackend.singlePageHappyPath)
         await siteBackend.sendOperation('mouseover', happyPathPage.header)
@@ -79,6 +93,7 @@ describe('Smoke Test - Integration', () => {
         assert.deepStrictEqual(currentData, baseline)
     }).timeout(5000)
     it('should not correlate locator when hovering undefined element', async () => {
+        console.log("Hola" + 4)
         let happyPathPage = testConfig.testSite.page.happypath
         await bluestoneBackend.startRecording(siteBackend.singlePageHappyPath)
         await siteBackend.sendOperation('mouseover', happyPathPage.paragraph)
@@ -91,6 +106,7 @@ describe('Smoke Test - Integration', () => {
         assert.deepStrictEqual(currentData, baseline)
     }).timeout(10000)
     it('should record click event in steps correct', async () => {
+        console.log("Hola" + 5)
         let happyPathPage = testConfig.testSite.page.happypath
         await bluestoneBackend.startRecording(siteBackend.singlePageHappyPath)
         await siteBackend.sendOperation('click', happyPathPage.paragraph)
